@@ -4,9 +4,9 @@ const doubleClickZoom = require('../lib/double_click_zoom');
 const Constants = require('../constants');
 const createVertex = require('../lib/create_vertex');
 
-const DrawLineString = {};
+const DrawLinePolygon = {};
 
-DrawLineString.onSetup = function(opts) {
+DrawLinePolygon.onSetup = function(opts) {
   opts = opts || {};
   const featureId = opts.featureId;
 
@@ -68,7 +68,7 @@ DrawLineString.onSetup = function(opts) {
   };
 };
 
-DrawLineString.clickAnywhere = function(state, e) {
+DrawLinePolygon.clickAnywhere = function(state, e) {
   if (state.currentVertexPosition > 0 && isEventAtCoordinates(e, state.line.coordinates[state.currentVertexPosition - 1]) ||
       state.direction === 'backwards' && isEventAtCoordinates(e, state.line.coordinates[state.currentVertexPosition + 1])) {
     return this.changeMode(Constants.modes.SIMPLE_SELECT, { featureIds: [state.line.id] });
@@ -83,18 +83,18 @@ DrawLineString.clickAnywhere = function(state, e) {
   }
 };
 
-DrawLineString.clickOnVertex = function(state) {
+DrawLinePolygon.clickOnVertex = function(state) {
   return this.changeMode(Constants.modes.SIMPLE_SELECT, { featureIds: [state.line.id] });
 };
 
-DrawLineString.onMouseMove = function(state, e) {
+DrawLinePolygon.onMouseMove = function(state, e) {
   state.line.updateCoordinate(state.currentVertexPosition, e.lngLat.lng, e.lngLat.lat);
   if (CommonSelectors.isVertex(e)) {
     this.updateUIClasses({ mouse: Constants.cursors.POINTER });
   }
 };
 
-DrawLineString.onTap = DrawLineString.onClick = function(state, e) {
+DrawLinePolygon.onTap = DrawLinePolygon.onClick = function(state, e) {
   if (CommonSelectors.isVertex(e)) {
     state.line.updateCoordinate(state.currentVertexPosition, state.line.coordinates[0][0], state.line.coordinates[0][1]);
     state.currentVertexPosition++;
@@ -103,7 +103,7 @@ DrawLineString.onTap = DrawLineString.onClick = function(state, e) {
   this.clickAnywhere(state, e);
 };
 
-DrawLineString.onKeyUp = function(state, e) {
+DrawLinePolygon.onKeyUp = function(state, e) {
   if (CommonSelectors.isEnterKey(e)) {
     this.changeMode(Constants.modes.SIMPLE_SELECT, { featureIds: [state.line.id] });
   } else if (CommonSelectors.isEscapeKey(e)) {
@@ -112,7 +112,7 @@ DrawLineString.onKeyUp = function(state, e) {
   }
 };
 
-DrawLineString.onStop = function(state) {
+DrawLinePolygon.onStop = function(state) {
   doubleClickZoom.enable(this);
   this.activateUIButton();
 
@@ -131,12 +131,12 @@ DrawLineString.onStop = function(state) {
   }
 };
 
-DrawLineString.onTrash = function(state) {
+DrawLinePolygon.onTrash = function(state) {
   this.deleteFeature([state.line.id], { silent: true });
   this.changeMode(Constants.modes.SIMPLE_SELECT);
 };
 
-DrawLineString.toDisplayFeatures = function(state, geojson, display) {
+DrawLinePolygon.toDisplayFeatures = function(state, geojson, display) {
   const isActiveLine = geojson.properties.id === state.line.id;
   geojson.properties.active = (isActiveLine) ? Constants.activeStates.ACTIVE : Constants.activeStates.INACTIVE;
   if (!isActiveLine) return display(geojson);
@@ -160,4 +160,4 @@ DrawLineString.toDisplayFeatures = function(state, geojson, display) {
   display(geojson);
 };
 
-module.exports = DrawLineString;
+module.exports = DrawLinePolygon;
