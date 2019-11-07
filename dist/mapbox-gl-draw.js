@@ -7040,8 +7040,8 @@ DrawLineString.clickAnywhere = function (state, e) {
   state.line.updateCoordinate(state.currentVertexPosition, e.lngLat.lng, e.lngLat.lat);
 
   if (state.direction === 'forward') {
-    state.line.updateCoordinate(state.currentVertexPosition, e.lngLat.lng, e.lngLat.lat);
     state.currentVertexPosition++;
+    state.line.updateCoordinate(state.currentVertexPosition, e.lngLat.lng, e.lngLat.lat);
   } else {
     state.line.addCoordinate(0, e.lngLat.lng, e.lngLat.lat);
   }
